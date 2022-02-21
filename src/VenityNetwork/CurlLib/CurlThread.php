@@ -84,6 +84,7 @@ class CurlThread extends Thread{
 
     public function triggerGarbageCollector(){
         $this->requests[] = serialize("gc");
+        $this->notify();
     }
 
     public function close() {
