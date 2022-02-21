@@ -109,6 +109,7 @@ class CurlLib{
         $request = new CurlRequest($id, $url, $headers, true, $body, $curlOpts);
         $thread = $this->selectThread();
         $this->thread[$thread]->sendRequest($request);
+        $this->threadTasksCount[$thread]++;
     }
 
     public function get(string $url, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null) {
@@ -122,6 +123,7 @@ class CurlLib{
         $request = new CurlRequest($id, $url, $headers, false, "", $curlOpts);
         $thread = $this->selectThread();
         $this->thread[$thread]->sendRequest($request);
+        $this->threadTasksCount[$thread]++;
     }
 
     public function close() {
@@ -130,3 +132,5 @@ class CurlLib{
         }
     }
 }
+
+CurlLib::detectPackaged();
