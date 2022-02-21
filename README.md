@@ -11,10 +11,26 @@ $curl = CurlLib::init($plugin, $threads);
 ```
 - GET request
 ```php
-$url = "";
+// example to get IP information
+$url = "http://ip-api.com/json/24.48.0.1";
 $headers = [];
 $curlOpts = [];
 $curl->get($url, $headers, $curlOpts, function(CurlResponse $response) {
+    echo $response->getStatusCode() . "\n";
+    echo $response->getBody() . "\n";
+    echo $response->getHeaders() . "\n";
+});
+```
+- POST request
+```php
+// example to send message via discord webhook
+$url = "https://discord.com/api/webhooks/12345/XXXXX";
+$postField = json_encode(["message" => "Hello World"]);
+$headers = [
+    "Content-Type: application/json"
+];
+$curlOpts = [];
+$curl->post($url, $postField, $headers, $curlOpts, function(CurlResponse $response) {
     echo $response->getStatusCode() . "\n";
     echo $response->getBody() . "\n";
     echo $response->getHeaders() . "\n";
