@@ -25,7 +25,7 @@ $curl->get($url, $headers, $curlOpts, function(CurlResponse $response) {
 ```php
 // example to send message via discord webhook
 $url = "https://discord.com/api/webhooks/12345/XXXXX";
-$postField = json_encode(["message" => "Hello World"]);
+$postField = json_encode(["content" => "Hello World"]);
 $headers = [
     "Content-Type: application/json"
 ];
