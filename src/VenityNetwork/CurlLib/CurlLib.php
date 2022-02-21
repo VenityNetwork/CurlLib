@@ -21,7 +21,7 @@ class CurlLib{
     }
 
     public static function detectPackaged() : void{
-        self::$packaged = __CLASS__ !== 'VenityNetwork\\MysqlLib\\MysqlLib';
+        self::$packaged = __CLASS__ !== 'VenityNetwork\\CurlLib\\CurlLib';
     }
 
     public static function init(PluginBase $plugin, int $threads = 1) {
