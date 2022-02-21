@@ -7,6 +7,7 @@ Don't do HTTP Request in an async task! It will block other async tasks like wor
 - Initialization
 ```php
 $threads = 1; // Increase this if you have a lot of http requests
+/** @var CurlLib $curl */
 $curl = CurlLib::init($plugin, $threads);
 ```
 - GET request
@@ -15,6 +16,7 @@ $curl = CurlLib::init($plugin, $threads);
 $url = "http://ip-api.com/json/24.48.0.1";
 $headers = [];
 $curlOpts = [];
+/** @var CurlLib $curl */
 $curl->get($url, $headers, $curlOpts, function(CurlResponse $response) {
     echo $response->getStatusCode() . "\n";
     echo $response->getBody() . "\n";
@@ -30,6 +32,7 @@ $headers = [
     "Content-Type: application/json"
 ];
 $curlOpts = [];
+/** @var CurlLib $curl */
 $curl->post($url, $postField, $headers, $curlOpts, function(CurlResponse $response) {
     echo $response->getStatusCode() . "\n";
     echo $response->getBody() . "\n";
