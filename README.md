@@ -1,7 +1,7 @@
 # CurlLib
 An asynchronous Curl library for PocketMine-MP
 
-Don't do HTTP Request in an async task! It will block other async tasks like world population, package compression and others
+Don't do HTTP Request in an async task! It will block other async tasks like world population, packets compression and others
 
 ## Usage
 - Initialization
