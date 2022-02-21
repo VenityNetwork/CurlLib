@@ -99,7 +99,8 @@ class CurlLib{
     }
 
     public function post(string $url, string $body, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null) {
-        $id = $this->nextId++;
+        $this->nextId++;
+        $id = $this->nextId;
         if($onSuccess !== null) {
             $this->onSuccess[$this->nextId] = $onSuccess;
         }
@@ -113,7 +114,8 @@ class CurlLib{
     }
 
     public function get(string $url, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null) {
-        $id = $this->nextId++;
+        $this->nextId++;
+        $id = $this->nextId;
         if($onSuccess !== null) {
             $this->onSuccess[$this->nextId] = $onSuccess;
         }
