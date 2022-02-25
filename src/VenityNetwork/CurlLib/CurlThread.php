@@ -49,7 +49,7 @@ class CurlThread extends Thread{
             if($request instanceof CurlRequest) {
                 $opts = $request->getCurlOpts();
                 if($request->isPost()) {
-                    $opts += [CURLOPT_POST => 1, CURLOPT_POSTFIELDS, $request->getPostField()];
+                    $opts += [CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $request->getPostField()];
                 }
                 try{
                     $result = Internet::simpleCurl($request->getUrl(), $request->getTimeout(), $request->getHeaders(), $opts);
