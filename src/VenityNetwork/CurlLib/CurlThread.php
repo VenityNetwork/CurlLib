@@ -37,16 +37,30 @@ class CurlThread extends Thread{
         }
     }
 
+    private function isSafeRunning() : bool {
+        return $this->synchronized(function() : bool {
+           return $this->running;
+        });
+    }
+
     public function onRun(): void{
-        $this->running = true;
-        while($this->running) {
+        $this->synchronized(function() {
+            $this->running = true;
+        });
+        while($this->isSafeRunning()) {
             $this->processRequests();
             $this->wait();
         }
     }
 
+    private function readRequests() : ?string{
+        return $this->synchronized(function() : ?string {
+            return $this->requests->shift();
+        });
+    }
+
     private function processRequests() {
-        while(($request = $this->requests->shift()) !== null) {
+        while(($request = $this->readRequests()) !== null) {
             $request = unserialize($request);
             if($request instanceof CurlRequest) {
                 $opts = $request->getCurlOpts();
@@ -70,27 +84,37 @@ class CurlThread extends Thread{
     }
 
     public function sendRequest(CurlRequest $request) {
-        $this->requests[] = serialize($request);
-        $this->notify();
+        $this->synchronized(function() use ($request) {
+            $this->requests[] = serialize($request);
+            $this->notify();
+        });
     }
 
     private function sendResponse(CurlResponse $response) {
-        $this->responses[] = serialize($response);
-        $this->notifier->wakeupSleeper();
+        $this->synchronized(function() use ($response) {
+            $this->responses[] = serialize($response);
+            $this->notifier->wakeupSleeper();
+        });
     }
 
     public function fetchResponse() : ?CurlResponse {
-        $response = $this->responses->shift();
-        return $response !== null ? unserialize($response) : null;
+        return $this->synchronized(function() {
+            $response = $this->responses->shift();
+            return $response !== null ? unserialize($response) : null;
+        });
     }
 
     public function triggerGarbageCollector(){
-        $this->requests[] = serialize("gc");
-        $this->notify();
+        $this->synchronized(function() {
+            $this->requests[] = serialize("gc");
+            $this->notify();
+        });
     }
 
     public function close() {
-        $this->running = false;
-        $this->notify();
+        $this->synchronized(function() {
+            $this->running = false;
+            $this->notify();
+        });
     }
 }
