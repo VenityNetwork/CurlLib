@@ -1,0 +1,14 @@
+{
+  "name": "venitynetwork/curllib",
+  "autoload": {
+    "psr-4": {
+      "VenityNetwork\\CurlLib\\": "/src/VenityNetwork/CurlLib"
+    }
+  },
+  "version": "1.0.0",
+  "require": {
+    "ext-pthreads": "*",
+    "ext-igbinary": "*",
+    "ext-curl": "*"
+  }
+}
