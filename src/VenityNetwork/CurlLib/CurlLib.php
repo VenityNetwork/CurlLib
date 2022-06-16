@@ -60,8 +60,8 @@ class CurlLib{
     }
 
     private function handleResponse(int $thread) {
-        $this->threadTasksCount[$thread]--;
         while(($response = $this->thread[$thread]->fetchResponse()) !== null) {
+            $this->threadTasksCount[$thread]--;
             $id = $response->getId();
             if($response->getException() !== null) {
                 if(isset($this->onFail[$id])) {
@@ -74,6 +74,15 @@ class CurlLib{
             }
             unset($this->onSuccess[$id]);
             unset($this->onFail[$id]);
+        }
+    }
+
+    public function waitAll() {
+        foreach($this->thread as $k => $thread) {
+            while(($this->threadTasksCount[$k]) > 0) {
+                $this->handleResponse($k);
+                usleep(1000);
+            }
         }
     }
 
@@ -129,6 +138,7 @@ class CurlLib{
     }
 
     public function close() {
+        $this->waitAll();
         foreach($this->thread as $thread){
             $thread->close();
         }

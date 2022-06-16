@@ -86,7 +86,7 @@ class CurlThread extends Thread{
     public function sendRequest(CurlRequest $request) {
         $this->synchronized(function() use ($request) {
             $this->requests[] = serialize($request);
-            $this->notify();
+            $this->notifyOne();
         });
     }
 
@@ -107,7 +107,7 @@ class CurlThread extends Thread{
     public function triggerGarbageCollector(){
         $this->synchronized(function() {
             $this->requests[] = serialize("gc");
-            $this->notify();
+            $this->notifyOne();
         });
     }
 
