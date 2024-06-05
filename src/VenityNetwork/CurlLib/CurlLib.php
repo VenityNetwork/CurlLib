@@ -7,9 +7,7 @@ namespace VenityNetwork\CurlLib;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
-use pocketmine\snooze\SleeperNotifier;
 use function usleep;
-use const PTHREADS_INHERIT_NONE;
 
 class CurlLib{
 
@@ -39,12 +37,11 @@ class CurlLib{
     private function __construct(
         private PluginBase $plugin, int $threads) {
         for($i = 0; $i < $threads; $i++){
-            $notifier = new SleeperNotifier();
-            Server::getInstance()->getTickSleeper()->addNotifier($notifier, function() use ($i) {
+            $sleeperEntry = Server::getInstance()->getTickSleeper()->addNotifier(function() use ($i): void {
                 $this->handleResponse($i);
             });
-            $t = new CurlThread(Server::getInstance()->getLogger(), $notifier);
-            $t->start(PTHREADS_INHERIT_NONE);
+            $t = new CurlThread(Server::getInstance()->getLogger(), $sleeperEntry);
+            $t->start();
             while(!$t->running) {
                 usleep(1000);
             }
@@ -59,7 +56,7 @@ class CurlLib{
         }), 20 * 1800);
     }
 
-    private function handleResponse(int $thread) {
+    private function handleResponse(int $thread): void{
         while(($response = $this->thread[$thread]->fetchResponse()) !== null) {
             $this->threadTasksCount[$thread]--;
             $id = $response->getId();
@@ -77,7 +74,7 @@ class CurlLib{
         }
     }
 
-    public function waitAll() {
+    public function waitAll(): void{
         foreach($this->thread as $k => $thread) {
             while(($this->threadTasksCount[$k]) > 0) {
                 $this->handleResponse($k);
@@ -107,7 +104,7 @@ class CurlLib{
         return $thread;
     }
 
-    public function post(string $url, string $body, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null) {
+    public function post(string $url, string $body, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null): void{
         $this->nextId++;
         $id = $this->nextId;
         if($onSuccess !== null) {
@@ -122,7 +119,7 @@ class CurlLib{
         $this->threadTasksCount[$thread]++;
     }
 
-    public function get(string $url, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null) {
+    public function get(string $url, array $headers = [], array $curlOpts = [], ?callable $onSuccess = null, ?callable $onFail = null): void{
         $this->nextId++;
         $id = $this->nextId;
         if($onSuccess !== null) {
@@ -137,11 +134,13 @@ class CurlLib{
         $this->threadTasksCount[$thread]++;
     }
 
-    public function close() {
+    public function close(): void{
         $this->waitAll();
         foreach($this->thread as $thread){
+            Server::getInstance()->getTickSleeper()->removeNotifier($thread->getSleeperEntry()->getNotifierId());
             $thread->close();
         }
+        $this->thread = [];
     }
 }
 

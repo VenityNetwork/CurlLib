@@ -5,9 +5,9 @@
       "VenityNetwork\\CurlLib\\": "/src/VenityNetwork/CurlLib"
     }
   },
-  "version": "1.0.0",
+  "version": "5.0.0",
   "require": {
-    "ext-pthreads": "*",
+    "ext-pmmpthread": "*",
     "ext-igbinary": "*",
     "ext-curl": "*"
   }
